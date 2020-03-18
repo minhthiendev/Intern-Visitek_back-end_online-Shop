@@ -1,8 +1,8 @@
 const Cart_Db = require('../models/cart');
 const Products = require('../models/products');
-let price = (id) => {
-    Products.findOne({ _id: id }).then(pro => price = pro.Price);
-}
+const jwt = require("jsonwebtoken");
+
+
 function Cart(cart) {
     this.products = cart.products || [];
     this.totalPrice = cart.totalPrice || 0;
@@ -27,18 +27,15 @@ function Cart(cart) {
             this.totalPrice = this.products.reduce((a, b) => a + (b.price * b.quantity), 0);
 
         }
-
     }
     this.date = Date.now();
-
-
     this.getCart = () => {
         return this.products;
     }
-
 };
 
 function AddtoCart(req, res) {
+
     let id = req.params.id;
     let cart = new Cart(req.session.cart ? req.session.cart : {})
     req.session.cart = cart;
@@ -46,16 +43,33 @@ function AddtoCart(req, res) {
     Products.findById(id, (err, product) => {
         if (product) {
             cart.add(product, product._id);
-            res.status(200).json({ data: cart });
             req.session.cart = cart;
+
+            jwt.verify(req.token, 'privatekey', (err, authdata) => {
+                if (err) {
+                    res.status(201).json({
+                        message: " cart only save on session",
+
+                    });
+                } else {
+                    res.status(201).json({
+                        message: " cart save in database",
+                        data: authdata
+                    });
+                }
+            })
+
         }
     })
+
+
+
 
 }
 
 function showCart(req, res) {
     if (!req.session.cart.products) {
-        res.json({});
+        res.json({ status: 'cart is empty' });
     }
     res.json(req.session.cart.products)
 }

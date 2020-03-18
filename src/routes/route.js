@@ -13,7 +13,7 @@ router.route('/signin').post(user_ctr.signIn);//oke
 
 
 
-router.post('/addProductToCart/:id', cart_ctr.AddtoCart);//tạm oke nhưng chưa lấy được giá của 1 sản phẩm
+router.post('/addProductToCart/:id', JWT.verifiToken, cart_ctr.AddtoCart);//tạm oke nhưng chưa lấy được giá của 1 sản phẩm
 router.get('/showCart', cart_ctr.showCart);// oke
 
 

@@ -13,13 +13,17 @@ function CreateProduct(req, res) {
         if (err) {
             res.sendStatus(403)
         } else {
-
-
-            var old_path = req.file.path;
-            var new_path = req.file.destination + req.file.originalname;
-            fs.rename(old_path, new_path, err => {
-                if (err) throw err;
-            });
+            let img;
+            if (!req.file) {
+                img = "no-image"
+            } else {
+                var old_path = req.file.path;
+                var new_path = req.file.destination + req.file.originalname;
+                fs.rename(old_path, new_path, err => {
+                    if (err) throw err;
+                });
+                img = req.file.originalname
+            }
 
             let data = {
                 sku: req.body.sku,
@@ -27,10 +31,8 @@ function CreateProduct(req, res) {
                 category: req.body.category,
                 price: req.body.price,
                 discount: req.body.discount,
-                image: req.file.originalname
+                image: img
             };
-
-
 
             let product = new Product(data)
             product.save().then(val => {
@@ -52,7 +54,9 @@ function DeleteProduct(req, res) {
         } else {
             let id = req.params.id;
             Product.deleteOne({ _id: id }, (err) => {
-                res.json({ 'deleted': true })
+                res.json({
+                    'deleted': true
+                })
             })
         }
     })

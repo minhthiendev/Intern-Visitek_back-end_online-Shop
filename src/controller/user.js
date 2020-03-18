@@ -33,7 +33,7 @@ function signUp_success(req, res) {
     let user = new User({ name: n, email: e, password: p })
     user.save().then(doc => {
         if (doc) {
-            res.status(200).json({ status: "success" });
+            res.status(201).json({ status: "success" });
         }
     });
     name = email = pass = null;
@@ -55,7 +55,7 @@ function signIn(req, res) {
                 }
                 res.json({
                     status: "success",
-                    token: token
+                    token: token,
                 });
             });
         } else {
