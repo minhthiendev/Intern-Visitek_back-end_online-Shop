@@ -10,10 +10,11 @@ function Cart(cart) {
         let temp_product = this.products.find(element => element.id == id);
 
         if (!temp_product) {
-            // Products.findOne({ _id: id }, (err, pro) => {
-
-            // });
-            temp_product = { id: id, quantity: 1, price: 5 }
+            let temp;
+            Products.findOne({ _id: id }, (err, pro) => {
+                temp = pro.price;
+            });
+            temp_product = { id: id, quantity: 1, price: temp }
             this.products.push(temp_product);
             this.totalPrice += temp_product.quantity * temp_product.price;
 
