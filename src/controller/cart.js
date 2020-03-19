@@ -1,5 +1,6 @@
 const Cart_Db = require('../models/cart');
 const Products = require('../models/products');
+const User = require('../models/user');
 const jwt = require("jsonwebtoken");
 
 
@@ -49,16 +50,24 @@ function AddtoCart(req, res) {
                 if (err) {
                     res.status(201).json({
                         message: " cart only save on session",
-
                     });
                 } else {
-                    res.status(201).json({
-                        message: " cart save in database",
-                        data: authdata
-                    });
+
+                    let cart_db = new Cart_Db({
+                        user: authdata._id,
+                        products: req.session.cart.product,
+                        totalPrice: req.session.cart.totalPrice,
+                        date: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                    })
+                    cart_db.save().then(val => {
+                        res.status(201).json({
+                            message: " cart save in database",
+                            data: authdata
+                        });
+                    })
                 }
             })
-
+            // ------
         }
     })
 
@@ -68,10 +77,28 @@ function AddtoCart(req, res) {
 }
 
 function showCart(req, res) {
-    if (!req.session.cart.products) {
-        res.json({ status: 'cart is empty' });
-    }
-    res.json(req.session.cart.products)
+
+    jwt.verify(req.token, 'privatekey', (err, authdata) => {
+        if (err) {
+            if (!req.session.cart.products) {
+                res.json({ status: 'cart is empty' });
+            }
+            res.json(req.session.cart.products)
+        } else {
+            Cart_Db.find({ user: authdata._id }, (err, doc) => {
+                if (doc) {
+                    if (!doc.products) {
+                        res.json({ status: 'cart is empty' });
+                    }
+                    res.json({
+                        userId: doc.user,
+                        carts: doc.products
+                    })
+                }
+            })
+        }
+    })
+
 }
 
 

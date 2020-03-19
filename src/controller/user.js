@@ -67,6 +67,20 @@ function signIn(req, res) {
     });
 }
 
+function changePassword(req, res) {
+    jwt.verify(req.token, 'privatekey', (err, authdata) => {
+        User.findOneAndUpdate({ _id: authdata._id }, { password: req.body.password }, (err, doc) => {
+            if (err) throw err;
+            if (doc) {
+                res.json({
+                    messsage: "success",
+                    new_password: doc.password
+                });
+            }
+        })
+    })
+}
+
 
 module.exports = {
     sendMail: sendMail,

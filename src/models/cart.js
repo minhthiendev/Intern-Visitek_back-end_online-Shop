@@ -31,7 +31,7 @@ let cart_schema = new schema({
     date: {
         type: Date,
         default: Date.now,
-        expires: '1m'
+        expires: '15d'
     }
 })
 
