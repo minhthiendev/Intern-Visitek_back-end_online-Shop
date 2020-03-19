@@ -24,7 +24,6 @@ function CreateProduct(req, res) {
                 });
                 img = req.file.originalname
             }
-
             let data = {
                 sku: req.body.sku,
                 productName: req.body.productName,
@@ -33,7 +32,6 @@ function CreateProduct(req, res) {
                 discount: req.body.discount,
                 image: img
             };
-
             let product = new Product(data)
             product.save().then(val => {
                 res.json({
@@ -43,8 +41,6 @@ function CreateProduct(req, res) {
             });
         }
     })
-
-
 }
 
 function DeleteProduct(req, res) {

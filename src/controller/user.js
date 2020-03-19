@@ -25,8 +25,6 @@ function sendMail(req, res) {
             });
         }
     })
-
-
 }
 
 function signUp_success(req, res) {
@@ -81,10 +79,10 @@ function changePassword(req, res) {
     })
 }
 
-
 module.exports = {
     sendMail: sendMail,
     signUp_success: signUp_success,
     signIn: signIn,
+    changePassword: changePassword,
     mailToken: this.mailToken
 };

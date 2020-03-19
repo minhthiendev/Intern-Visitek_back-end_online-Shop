@@ -10,13 +10,9 @@ const upload = require('../middlewares/upload');
 router.route('/signUp').post(user_ctr.sendMail); //ok
 router.get(`/confirm/${user_ctr.mailToken}`, user_ctr.signUp_success);//oke
 router.route('/signin').post(user_ctr.signIn);//oke
-
-
-
+router.post('/changePassword', user_ctr.changePassword);
 router.post('/addProductToCart/:id', JWT.verifiToken, cart_ctr.AddtoCart);//tạm oke nhưng chưa lấy được giá của 1 sản phẩm
 router.get('/showCart', cart_ctr.showCart);// oke
-
-
 
 router.route('/products')
     .get(products_ctr.GetAllProducts)//oke

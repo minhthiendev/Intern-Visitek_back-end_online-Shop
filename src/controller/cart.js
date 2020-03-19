@@ -45,14 +45,12 @@ function AddtoCart(req, res) {
         if (product) {
             cart.add(product, product._id);
             req.session.cart = cart;
-
             jwt.verify(req.token, 'privatekey', (err, authdata) => {
                 if (err) {
                     res.status(201).json({
                         message: " cart only save on session",
                     });
                 } else {
-
                     let cart_db = new Cart_Db({
                         user: authdata._id,
                         products: req.session.cart.product,
