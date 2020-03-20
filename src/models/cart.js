@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 let schema = mongoose.Schema;
+let today = new Date();
 let cart_schema = new schema({
     user: {
         type: schema.Types.ObjectId,
@@ -13,24 +14,15 @@ let cart_schema = new schema({
                 ref: "products",
                 required: true
             },
-            quatity: {
-                type: Number,
-                required: true
-            },
-            price: {
+            quantity: {
                 type: Number,
                 required: true
             }
         }
     ],
-    totalPrice: {
-        type: Number,
-        required: true
-    },
     date: {
-        type: Date,
-        default: Date.now,
-        expires: '15d'
+        type: String,
+        default: today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
     }
 })
 

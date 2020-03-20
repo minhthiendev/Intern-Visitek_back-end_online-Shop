@@ -1,4 +1,6 @@
-function verifiToken(req, res, next) {
+const jwt = require('jsonwebtoken');
+const User = require('../models/user.js');
+async function verifiToken(req, res, next) {
     const header = req.headers['authorization'];
 
     if (typeof header !== 'undefined') {
@@ -6,11 +8,22 @@ function verifiToken(req, res, next) {
         const tokenjwt = bearer[1];
 
         req.token = tokenjwt;
-        next();
+        try {
+            const decode = jwt.verify(req.token, 'privatekey');
+            req.user = await User.findById(decode.id);
+            if (!req.user) {
+                res.sendStatus(403)
+            }
+            console.log(req.user)
+            next();
+        } catch (error) {
+            res.sendStatus(403)
+        }
     } else {
         //If header is undefined return Forbidden (403)
         res.sendStatus(403)
     }
+
 }
 
 module.exports = {
