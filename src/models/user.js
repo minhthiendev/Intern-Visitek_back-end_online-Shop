@@ -7,6 +7,12 @@ let User_schema = new schema({
     type: String,
     required: true
   },
+  phone: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/, 'Please fill a valid phone number']
+  },
   email: {
     type: String,
     required: true,
@@ -21,6 +27,11 @@ let User_schema = new schema({
     type: String,
     required: true,
     default: "user"
+  },
+  active: {
+    type: String,
+    required: true,
+    default: false
   }
 });
 

@@ -3,9 +3,19 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs');
 
 function GetAllProducts(req, res) {
-    Product.find({}, (err, products) => {
-        res.json({ data: products });
-    })
+    try {
+        Product.find({}, (err, products) => {
+            if (products) {
+                res.json({ data: products });
+            }
+            else {
+                res.json({ message: "Product not available " });
+            }
+        })
+    } catch (error) {
+
+    }
+
 }
 
 function CreateProduct(req, res) {

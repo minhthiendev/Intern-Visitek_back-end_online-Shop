@@ -1,41 +1,56 @@
 const User = require("../models/user");
-const Mail = require("../middlewares/mailAuth");
-const shortId = require("shortid");
+const Mail = require("../middlewares/sendMail");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Cart = require("../models/cart")
-let e, p, n;
-let mailToken = shortId.generate();
+const shortId = require('shortid');
+let mailToken;
 
+async function signUp(req, res) {
+    try {
+        let { name, sdt, email, password, status } = req.body;
+        await User.findOne({ email: email }, async (err, user) => {
+            if (user) {
+                if (user.active == "false") {
+                    res.json({ messsage: "Your account  has not been authenticated " });
+                } else {
+                    res.json({ messsage: "this email is realy existed !!" });
+                }
+            } else {
+                await User.create({
+                    name: name,
+                    phone: sdt,
+                    email: email,
+                    password: bcrypt.hashSync(password, 10)
+                }).then(val => {
+                    mailToken = req.session.mailToken = val._id
+                    console.log("2:", req.session.mailToken)
+                    Mail(val.email, mailToken);
+                    res.json({
+                        messsage: "successfully ---you must check mail to active your account",
+                        token: mailToken
+                    })
+                })
+            }
+        })
 
-function sendMail(req, res) {
-    let { name, email, password } = req.body;
-    User.findOne({ email: email }, (err, doc) => {
-        if (doc) {
-            res.json({ messsage: "email is existed !!!" })
-        }
-        else {
-            Mail(email, mailToken);
-            n = name;
-            e = email;
-            p = bcrypt.hashSync(password, 10);
-            res.json({
-                messsage: "sending mail",
-                data: { n, e, p },
-                token: mailToken
-            });
-        }
-    })
+    } catch (error) {
+        res.sendStatus(404)
+    }
+
 }
 
-function signUp_success(req, res) {
-    let user = new User({ name: n, email: e, password: p })
-    user.save().then(doc => {
-        if (doc) {
-            res.status(201).json({ status: "success" });
-        }
-    });
-    name = email = pass = null;
+function checkedMail(req, res) {
+    try {
+        User.findOneAndUpdate({ _id: id }, { active: true }).then(raw => {
+            res.json({
+                messsage: "successfully",
+                raw: raw
+            })
+        })
+    } catch (error) {
+        res.sendStatus(404)
+    }
+
 }
 
 // ----------------------------end sign up--------------------------------------
@@ -52,11 +67,6 @@ function signIn(req, res) {
                         err: err
                     });
                 }
-                // let cart = Cart.findOne({ user: user })
-                // if (!cart) {
-                //     cart = Cart.create({ user: user })
-                // }
-                // req.session.cart = cart;
                 res.json({
                     status: "success",
                     token: token,
@@ -87,8 +97,8 @@ function changePassword(req, res) {
 }
 
 module.exports = {
-    sendMail: sendMail,
-    signUp_success: signUp_success,
+    checkedMail: checkedMail,
+    signUp: signUp,
     signIn: signIn,
     changePassword: changePassword,
     mailToken: mailToken

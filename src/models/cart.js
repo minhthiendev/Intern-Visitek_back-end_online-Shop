@@ -21,8 +21,9 @@ let cart_schema = new schema({
         }
     ],
     date: {
-        type: String,
-        default: today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
+        type: Date,
+        default: Date.parse(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate())
+
     }
 })
 

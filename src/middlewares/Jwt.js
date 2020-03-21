@@ -14,7 +14,6 @@ async function verifiToken(req, res, next) {
             if (!req.user) {
                 res.sendStatus(403)
             }
-            console.log(req.user)
             next();
         } catch (error) {
             res.sendStatus(403)

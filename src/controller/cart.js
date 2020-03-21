@@ -33,15 +33,22 @@ async function AddtoCart(req, res, next) {
 
 
 function showCart(req, res) {
-    if (req.session.cart) {
+
+    try {
+        if (req.session.cart) {
+            return res.json({
+                status: true,
+                carts: req.session.cart
+            })
+        }
         res.json({
-            status: true,
-            carts: req.session.cart
+            messsage: " no products in your cart"
+        })
+    } catch (error) {
+        return res.json({
+            messsage: error
         })
     }
-    res.json({
-        messsage: " no products in your cart"
-    })
 }
 
 const saveCart = async (req, res) => {
@@ -50,13 +57,13 @@ const saveCart = async (req, res) => {
         let c = new Cart_Db({
             user: req.user._id,
             products: req.session.cart,
-            date: today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
+            date: Date.parse(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate())
+            //date: today.getDate()
         })
         const cart = await Cart_Db.findOne({ user: req.user._id });
 
         if (!cart) {
             const x = await c.save().then()
-
             if (x) {
                 return res.json({
                     status: true,
@@ -65,10 +72,9 @@ const saveCart = async (req, res) => {
             }
         }
         const y = await Cart_Db.findOneAndUpdate({ user: req.user._id }, {
-            products: arr,
-            date: today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear()
+            products: req.session.cart,
+            date: Date.parse(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate())
         });
-        console.log(y);
         if (y) {
             return res.json({
                 status: true,
