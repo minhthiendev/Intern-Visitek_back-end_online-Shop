@@ -7,11 +7,13 @@ const JWT = require('../middlewares/Jwt');
 const upload = require('../middlewares/upload');
 const CheckAdmin = require('../middlewares/isAdmin');
 const checkCart = require('../middlewares/checkCart');
+const checkCart15day = require('../middlewares/checkCart');
 
-router.get('/', checkCart.check15day);
+router.get('/', checkCart.checkCart15day);
 router.route('/signUp').post(user_ctr.signUp); //ok
-router.get(`/confirm/${user_ctr.mailToken}`, user_ctr.checkedMail);//oke
-router.route('/signin').post(user_ctr.signIn);//oke
+router.get('/confirm/:id', user_ctr.checkedMail);//oke
+
+router.route('/signin').post(checkCart15day.checkCart15day, user_ctr.signIn);//oke
 router.post('/changePassword', JWT.verifiToken, user_ctr.changePassword);
 
 router.post('/addProductToCart/:id', cart_ctr.AddtoCart);//oke

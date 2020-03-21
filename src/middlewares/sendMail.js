@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-module.exports = (receiver, token) => {
+module.exports = (receiver) => {
 	this.transporter = nodemailer.createTransport({
 		service: "gmail",
 		port: 587,
@@ -13,9 +13,9 @@ module.exports = (receiver, token) => {
 
 	this.mailOption = {
 		from: process.env.emailShop, // sender address
-		to: receiver, // list of receivers
+		to: receiver.email, // list of receivers
 		subject: "Conform Email", // Subject line
-		html: `Please click  this email to conform your email : <a href ="http://localhost:3000/api/confirm/${token}" >Confirm</a>`  //  authenticate code
+		html: `Please click  this email to conform your email : <a href ="http://localhost:3000/api/confirm/${receiver._id}" >Confirm</a>`  //  authenticate code
 	};
 	this.send = this.transporter.sendMail(this.mailOption, (err, info) => {
 		if (err) throw err;

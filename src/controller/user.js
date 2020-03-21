@@ -24,7 +24,7 @@ async function signUp(req, res) {
                 }).then(val => {
                     mailToken = req.session.mailToken = val._id
                     console.log("2:", req.session.mailToken)
-                    Mail(val.email, mailToken);
+                    Mail(val);
                     res.json({
                         messsage: "successfully ---you must check mail to active your account",
                         token: mailToken
@@ -32,19 +32,24 @@ async function signUp(req, res) {
                 })
             }
         })
-
+        console.log(req.session.mailToken);
     } catch (error) {
         res.sendStatus(404)
     }
-
 }
 
 function checkedMail(req, res) {
+
     try {
-        User.findOneAndUpdate({ _id: id }, { active: true }).then(raw => {
-            res.json({
-                messsage: "successfully",
-                raw: raw
+        User.findOneAndUpdate({ _id: req.params.id }, { active: true }).then(raw => {
+            if (raw) {
+                return res.json({
+                    messsage: "successfully",
+                    raw: raw
+                })
+            }
+            return res.json({
+                messsage: "Time Out ! You must register again !!! ",
             })
         })
     } catch (error) {
@@ -59,7 +64,7 @@ function signIn(req, res) {
     const { email, password } = req.body;
     User.findOne({ email: email }, (err, user) => {
         if (err) throw err;
-        if (bcrypt.compareSync(password, user.password)) {
+        if (bcrypt.compareSync(password, user.password) && user.active == 'true') {
             jwt.sign({ id: user._id }, "privatekey", { expiresIn: "1h" }, (err, token) => {
                 if (err) {
                     res.json({
